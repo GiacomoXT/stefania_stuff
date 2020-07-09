@@ -8,6 +8,7 @@ __copyright__ = 'stocazzo'
 
 
 import argparse
+import matplotlib.pyplot as plot
 
 
 def argument_parser():
@@ -67,7 +68,6 @@ def argument_parser():
 
 if __name__ == "__main__":
 
-    # Argument parsing
     args = argument_parser().parse_args()
     file_name_prima = args.input_prima
     file_name_dopo = args.input_dopo
@@ -121,9 +121,6 @@ if __name__ == "__main__":
     print(f'Depth = {(integral_prima - integral_dopo)/(x_max - x_min)}')
 
     if do_plot:
-        
-        import matplotlib.pyplot as plot
-
         plot.style.use("belle2")
         plot.figure(figsize=[16,10])
         plot.plot(list_x_prima, list_y_prima, color='blue', label='Before')
