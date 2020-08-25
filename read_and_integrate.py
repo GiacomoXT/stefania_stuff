@@ -9,6 +9,7 @@ __copyright__ = 'stocazzo'
 
 import argparse
 import matplotlib.pyplot as plot
+import math
 
 
 def argument_parser():
@@ -98,6 +99,10 @@ if __name__ == "__main__":
     integral_prima = 0
     integral_dopo = 0
     points = len(list_x_prima)
+    y_max_prima = -math.inf
+    y_max_dopo = -math.inf
+    y_min_prima = math.inf
+    y_min_dopo = math.inf
     if x_min == -1:
         x_min = min([list_x_prima[0], list_x_dopo[0]])
     if x_max == -1:
@@ -109,25 +114,36 @@ if __name__ == "__main__":
             if (x_prima > x_min) and (x_prima < x_max):
                 delta = list_x_prima[i] - list_x_prima[i-1]
                 integral_prima += delta * (list_y_prima[i-1] + list_y_prima[i])
+                y_min_prima = min(y_min_prima, list_y_prima[i])
+                y_max_prima = max(y_max_prima, list_y_prima[i])
             if (x_dopo > x_min) and (x_dopo < x_max):
                 delta = list_x_dopo[i] - list_x_dopo[i-1]
                 integral_dopo += delta * (list_y_dopo[i-1] + list_y_dopo[i])
+                y_min_dopo = min(y_min_dopo, list_y_dopo[i])
+                y_max_dopo = max(y_max_dopo, list_y_dopo[i])
+    y_min = min(y_min_prima, y_min_dopo)
+    y_max = max(y_max_prima, y_max_dopo)
     integral_prima *= 0.5
     integral_dopo *= 0.5
 
     print(f'Integral before = {integral_prima}')
     print(f'Integral after = {integral_dopo}')
     print(f'Difference = {integral_prima - integral_dopo}')
-    print(f'Depth = {(integral_prima - integral_dopo)/(x_max - x_min)}')
+    result = (integral_prima - integral_dopo)/(x_max - x_min)
+    print(f'Depth = {result}')
 
     if do_plot:
         plot.style.use("belle2")
         plot.figure(figsize=[16,10])
+        for x in [x_min, x_max]:
+            plot.axvline(x=x, color="grey", linestyle="--")
         plot.plot(list_x_prima, list_y_prima, color='blue', label='Before')
         plot.plot(list_x_dopo, list_y_dopo, color='red', label='After')
         plot.legend()
-        plot.xlabel('Length [nm]')
+        plot.xlabel('Scan length [\u03bcm]')
         plot.xlim(x_min-20, x_max+20)
-        plot.ylabel('Depth [nm]')
+        plot.ylim(y_min-250, y_max+250)
+        plot.ylabel('Topography [nm]')
+        plot.title(f'Difference: {result:.1f} nm')
         plot.show()
         plot.savefig(plot_name)
